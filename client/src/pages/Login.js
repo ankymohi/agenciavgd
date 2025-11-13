@@ -40,10 +40,10 @@ export default function LoginPage() {
     }
 
     const endpoint = isLogin ? 'login' : 'signup';
-    const url =
-      window.location.hostname === 'localhost'
-        ? 'http://localhost:5000/api/auth/' + endpoint
-        : 'https://hnyclb.online/api/auth/' + endpoint;
+   const API_BASE_URL =
+  process.env.REACT_APP_API_URL || 'http://localhost:5000';
+
+const url = `${API_BASE_URL}/api/auth/${endpoint}`;
 
     try {
       const res = await fetch(url, {
