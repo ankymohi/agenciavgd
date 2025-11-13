@@ -5,6 +5,7 @@ import "./VGD.css";
 import logo from "../assets/logo.png";
 
 // Import local gallery images
+
 import img1 from "../assets/IMG_8022.png";
 import img2 from "../assets/IMG_8086.png";
 import img3 from "../assets/IMG_8136.png";
@@ -161,19 +162,13 @@ export default function VGDSubscriptionPage() {
 <section className="vgd-hero">
   <div className="vgd-hero-content">
     <h1 className="vgd-hero-title">
-      Turmale Miotling Agenciea<br />
-      To VGGD Agency<br />
-      Shoules
+      Ele vem de moto, volta deixando saudade.<br />
+      Nickboy — seu corre 
+      <span className="vgd-hero-18-badge">+18 </span>
     </h1>
-    <p className="vgd-hero-subtitle">
-      Utilizing scarf and VGDD Punness auto ride at<br />
-      elong black enolttentable deer black tiers and<br />
-      and leight.
-    </p>
-    <button className="vgd-hero-btn">SHOP NOW</button>
+    <button className="vgd-hero-btn">Assine agora</button>
   </div>
 </section>
-
 
 
 
