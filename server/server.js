@@ -13,7 +13,11 @@ dotenv.config();
 const app = express();
 app.use(cors());
 app.use(express.json());
-
+// ✅ Allow requests from your frontend domain
+app.use(cors({
+  origin: ["https://agenciavgd.vercel.app", "https://agenciavgd-xy81.vercel.app"],
+  credentials: true, // if you’re using cookies or auth tokens
+}));
 // routes
 app.use("/api/auth", authRoutes);
 app.use("/api/images", bunnyRoutes);
@@ -48,7 +52,7 @@ app.post("/create-preference", async (req, res) => {
       
      back_urls: {
     success: "https://himalayastechies.com/payment-success",
-    failure: "https://himalayastechies.com/payment-failure",
+    failure: "https://localhost:3000/payment-failure",
     pending: "hhttps://himalayastechies.com/payment-pending"
   },
       auto_return: "approved",
