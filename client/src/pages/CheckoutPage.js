@@ -12,22 +12,23 @@ export default function CheckoutPage() {
   const [paymentMethod, setPaymentMethod] = useState("pix");
 
   useEffect(() => {
-    try {
-      const userData = JSON.parse(localStorage.getItem("user"));
-      setUser(userData);
-      
-      // Set plan from navigation state if available
-      if (location.state?.plan) {
-        const planName = location.state.plan.toLowerCase().replace("pack ", "pack");
-        const planData = plans.find(p => p.name.toLowerCase() === planName.toLowerCase());
-        if (planData) {
-          setSelectedPlan(planData);
-        }
+  try {
+    const userData = JSON.parse(localStorage.getItem("user"));
+    setUser(userData);
+    
+    // Set plan from navigation state if available
+    if (location.state?.plan) {
+      const planName = location.state.plan.toLowerCase().replace("pack ", "pack");
+      const planData = plans.find(p => p.name.toLowerCase() === planName.toLowerCase());
+      if (planData) {
+        setSelectedPlan(planData);
       }
-    } catch (error) {
-      console.error("Error loading user data:", error);
     }
-  }, [location.state]);
+  } catch (error) {
+    console.error("Error loading user data:", error);
+  }
+}, [location.state, plans]); // ✅ added plans here
+
 
   const plans = [
     {
