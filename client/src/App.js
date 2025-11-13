@@ -7,7 +7,6 @@ import Home from "./pages/Home";
 import CheckoutPage from "./pages/CheckoutPage";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
-import Admin from "./pages/Admin";
 import Success from "./pages/Success";
 function App() {
   return (
@@ -32,14 +31,7 @@ function App() {
           }
         />
 
-        <Route
-          path="/admin-dashboard"
-          element={
-            <ProtectedRoute>
-              <Admin />
-            </ProtectedRoute>
-          }
-        />
+        
       </Routes>
     </Router>
   );

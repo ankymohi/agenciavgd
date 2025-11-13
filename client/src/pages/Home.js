@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Check, Shield, Star, Crown, Sparkles } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import "./VGD.css";
@@ -17,7 +17,7 @@ export default function VGDSubscriptionPage() {
   const [showLoginToast, setShowLoginToast] = useState(false);
   const navigate = useNavigate();
 
-  const previewImages = Array(17).fill("https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=400");
+  
 
   const plans = [
     {
