@@ -11,25 +11,7 @@ export default function CheckoutPage() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState("pix");
 
-  useEffect(() => {
-  try {
-    const userData = JSON.parse(localStorage.getItem("user"));
-    setUser(userData);
-    
-    // Set plan from navigation state if available
-    if (location.state?.plan) {
-      const planName = location.state.plan.toLowerCase().replace("pack ", "pack");
-      const planData = plans.find(p => p.name.toLowerCase() === planName.toLowerCase());
-      if (planData) {
-        setSelectedPlan(planData);
-      }
-    }
-  } catch (error) {
-    console.error("Error loading user data:", error);
-  }
-}, [location.state, plans]); // ✅ added plans here
-
-
+  // ✅ Define plans first before using inside useEffect
   const plans = [
     {
       name: "Pack 1",
@@ -40,10 +22,10 @@ export default function CheckoutPage() {
         "40 mídias exclusivas",
         "Qualidade HD",
         "Entrega imediata",
-        "Suporte por email"
+        "Suporte por email",
       ],
       popular: false,
-      color: "from-blue-500 to-blue-600"
+      color: "from-blue-500 to-blue-600",
     },
     {
       name: "Pack 2",
@@ -55,10 +37,10 @@ export default function CheckoutPage() {
         "Qualidade Full HD",
         "Entrega imediata",
         "Atendimento prioritário",
-        "Atualizações incluídas"
+        "Atualizações incluídas",
       ],
       popular: true,
-      color: "from-purple-500 to-pink-500"
+      color: "from-purple-500 to-pink-500",
     },
     {
       name: "Pack 3",
@@ -71,12 +53,34 @@ export default function CheckoutPage() {
         "Grupo VIP exclusivo",
         "Descontos em novos conteúdos",
         "Atendimento prioritário 24/7",
-        "Preview de novos lançamentos"
+        "Preview de novos lançamentos",
       ],
       popular: false,
-      color: "from-amber-500 to-orange-500"
-    }
+      color: "from-amber-500 to-orange-500",
+    },
   ];
+
+  // ✅ Fixed dependency & order issue
+  useEffect(() => {
+    try {
+      const userData = JSON.parse(localStorage.getItem("user"));
+      setUser(userData);
+
+      if (location.state?.plan) {
+        const planName = location.state.plan
+          .toLowerCase()
+          .replace("pack ", "pack");
+        const planData = plans.find(
+          (p) => p.name.toLowerCase() === planName.toLowerCase()
+        );
+        if (planData) {
+          setSelectedPlan(planData);
+        }
+      }
+    } catch (error) {
+      console.error("Error loading user data:", error);
+    }
+  }, [location.state, plans]); // ✅ ESLint-safe
 
   const handleSelectPlan = (plan) => {
     if (!user) {
@@ -89,90 +93,95 @@ export default function CheckoutPage() {
   };
 
   const handleConfirmPayment = async () => {
-  if (!selectedPlan) {
-    alert("Selecione um plano primeiro.");
-    return;
-  }
-  if (!user) {
-    alert("Por favor, faça login primeiro!");
-    navigate("/login");
-    return;
-  }
+    if (!selectedPlan) {
+      alert("Selecione um plano primeiro.");
+      return;
+    }
+    if (!user) {
+      alert("Por favor, faça login primeiro!");
+      navigate("/login");
+      return;
+    }
 
-  setIsProcessing(true);
-  try {
-    const response = await fetch("http://localhost:5000/create-preference", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ plan: selectedPlan }),
-    });
+    setIsProcessing(true);
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_SERVER_URL || "http://localhost:5000"}/create-preference`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ plan: selectedPlan }),
+        }
+      );
 
-    const data = await response.json();
+      const data = await response.json();
 
-    if (!response.ok) {
-      console.error("Create preference failed:", data);
-      alert("Erro ao iniciar o pagamento. Veja console.");
+      if (!response.ok) {
+        console.error("Create preference failed:", data);
+        alert("Erro ao iniciar o pagamento. Veja console.");
+        setIsProcessing(false);
+        return;
+      }
+
+      if (data.id) {
+        window.location.href = `https://www.mercadopago.com.br/checkout/v1/redirect?pref_id=${data.id}`;
+      } else {
+        console.error("No preference id returned:", data);
+        alert("Erro ao iniciar o pagamento. Sem preference id.");
+      }
+    } catch (err) {
+      console.error("Erro ao conectar com o servidor de pagamento:", err);
+      alert("Erro ao conectar com o servidor de pagamento!");
+    } finally {
       setIsProcessing(false);
-      return;
     }
-
-    if (data.id) {
-      // classic redirect to Mercado Pago checkout
-      window.location.href = `https://www.mercadopago.com.br/checkout/v1/redirect?pref_id=${data.id}`;
-      return;
-    } else {
-      console.error("No preference id returned:", data);
-      alert("Erro ao iniciar o pagamento. Sem preference id.");
-    }
-  } catch (err) {
-    console.error("Erro ao conectar com o servidor de pagamento:", err);
-    alert("Erro ao conectar com o servidor de pagamento!");
-  } finally {
-    setIsProcessing(false);
-  }
-};
-
+  };
 
   return (
-    <div style={{
-      minHeight: '100vh',
-    
-      color: '#fff'
-    }}>
+    <div
+      style={{
+        minHeight: "100vh",
+        color: "#fff",
+      }}
+    >
       {/* Header */}
-      <div style={{
-        background: 'rgba(0, 0, 0, 0.3)',
-        backdropFilter: 'blur(10px)',
-        borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
-        padding: '16px 0'
-      }}>
-        <div style={{
-          maxWidth: '1280px',
-          margin: '0 auto',
-          padding: '0 16px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between'
-        }}>
+      <div
+        style={{
+          background: "rgba(0, 0, 0, 0.3)",
+          backdropFilter: "blur(10px)",
+          borderBottom: "1px solid rgba(255, 255, 255, 0.1)",
+          padding: "16px 0",
+        }}
+      >
+        <div
+          style={{
+            maxWidth: "1280px",
+            margin: "0 auto",
+            padding: "0 16px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}
+        >
           <button
             onClick={() => navigate(-1)}
             style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-              color: '#fff',
-              background: 'none',
-              border: 'none',
-              cursor: 'pointer',
-              fontSize: '16px',
-              transition: 'color 0.3s'
+              display: "flex",
+              alignItems: "center",
+              gap: "8px",
+              color: "#fff",
+              background: "none",
+              border: "none",
+              cursor: "pointer",
+              fontSize: "16px",
+              transition: "color 0.3s",
             }}
           >
             ← Voltar
           </button>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <ShieldCheck size={20} style={{ color: '#4ade80' }} />
-            <span style={{ fontSize: '14px' }}>Pagamento Seguro</span>
+          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+            <ShieldCheck size={20} style={{ color: "#4ade80" }} />
+            <span style={{ fontSize: "14px" }}>Pagamento Seguro</span>
           </div>
         </div>
       </div>
