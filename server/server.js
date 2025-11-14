@@ -18,7 +18,8 @@ const app = express();
 const allowedOrigins = [
   "https://agenciavgd.vercel.app",
   "https://agenciavgd-xy81.vercel.app",
- "https://www.nickboy.com.br",
+ "https://nickboy.com.br",
+  "https://www.nickboy.com.br"
   "https://agenciavgd-anwr.vercel.app",
   "http://localhost:3000"
 ];
