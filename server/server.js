@@ -20,32 +20,28 @@ const allowedOrigins = [
   "https://agenciavgd-xy81.vercel.app",
   "https://agenciavgd-anwr.vercel.app",
   "http://localhost:3000",
-
-  // ⭐ FIX: ADD BOTH
   "https://nickboy.com.br",
   "https://www.nickboy.com.br"
 ];
 
-app.use(
-  cors({
-    origin: function (origin, callback) {
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        console.log("❌ Blocked by CORS:", origin);
-        callback(new Error("Not allowed by CORS"));
-      }
-    },
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    credentials: true,
-  })
-);
+// GLOBAL CORS FIX
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
 
-app.options("*", cors());
+  if (allowedOrigins.includes(origin)) {
+    res.header("Access-Control-Allow-Origin", origin);
+  }
 
+  res.header("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
+  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  res.header("Access-Control-Allow-Credentials", "true");
 
-// 🔥 IMPORTANT — FIXES OPTIONS PREFLIGHT ERRORS
-app.options("*", cors());
+  if (req.method === "OPTIONS") {
+    return res.sendStatus(200);
+  }
+
+  next();
+});
 
 app.use(express.json());
 
