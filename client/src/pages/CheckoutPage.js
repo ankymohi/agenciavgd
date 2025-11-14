@@ -99,12 +99,12 @@ export default function CheckoutPage() {
   }
 
   setIsProcessing(true);
+
   try {
     const API_BASE_URL =
-  process.env.REACT_APP_API_URL || "https://agenciavgd.onrender.com";
+      process.env.REACT_APP_API_URL || "https://agenciavgd.onrender.com";
 
-
-const response = await fetch(${API_BASE_URL}/create-preference, {
+    const response = await fetch(`${API_BASE_URL}/create-preference`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ plan: selectedPlan }),
@@ -120,9 +120,7 @@ const response = await fetch(${API_BASE_URL}/create-preference, {
     }
 
     if (data.id) {
-      // classic redirect to Mercado Pago checkout
       window.location.href = `https://www.mercadopago.com.br/checkout/v1/redirect?pref_id=${data.id}`;
-      return;
     } else {
       console.error("No preference id returned:", data);
       alert("Erro ao iniciar o pagamento. Sem preference id.");
@@ -134,7 +132,6 @@ const response = await fetch(${API_BASE_URL}/create-preference, {
     setIsProcessing(false);
   }
 };
-
 
   return (
     <div style={{
