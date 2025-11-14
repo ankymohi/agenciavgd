@@ -13,7 +13,7 @@ dotenv.config();
 const app = express();
 
 // ------------------------------
-// ✅ FIXED CORS (ONLY THIS ONE)
+// ✅ FIXED CORS (FINAL VERSION)
 // ------------------------------
 const allowedOrigins = [
   "https://agenciavgd.vercel.app",
@@ -25,17 +25,20 @@ const allowedOrigins = [
 app.use(
   cors({
     origin: function (origin, callback) {
-      if (!origin || allowedOrigins.includes(origin)) {
+      if (!origin || allowedOrigins.includes(origin) || !origin) {
         callback(null, true);
       } else {
         console.log("❌ Blocked by CORS:", origin);
         callback(new Error("Not allowed by CORS"));
       }
     },
-    methods: ["GET", "POST", "PUT", "DELETE"],
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     credentials: true,
   })
 );
+
+// 🔥 IMPORTANT — FIXES OPTIONS PREFLIGHT ERRORS
+app.options("*", cors());
 
 app.use(express.json());
 
