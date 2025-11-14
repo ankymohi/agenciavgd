@@ -101,7 +101,8 @@ export default function CheckoutPage() {
   setIsProcessing(true);
   try {
     const API_BASE_URL =
-  process.env.REACT_APP_API_URL || "http://localhost:5000";
+  process.env.REACT_APP_API_URL || "https://agenciavgd.onrender.com";
+
 
 const response = await fetch(${API_BASE_URL}/create-preference, {
       method: "POST",
