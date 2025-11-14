@@ -18,16 +18,18 @@ const app = express();
 const allowedOrigins = [
   "https://agenciavgd.vercel.app",
   "https://agenciavgd-xy81.vercel.app",
- "https://nickboy.com.br",
-  "https://www.nickboy.com.br"
   "https://agenciavgd-anwr.vercel.app",
-  "http://localhost:3000"
+  "http://localhost:3000",
+
+  // ⭐ FIX: ADD BOTH
+  "https://nickboy.com.br",
+  "https://www.nickboy.com.br"
 ];
 
 app.use(
   cors({
     origin: function (origin, callback) {
-      if (!origin || allowedOrigins.includes(origin) || !origin) {
+      if (!origin || allowedOrigins.includes(origin)) {
         callback(null, true);
       } else {
         console.log("❌ Blocked by CORS:", origin);
@@ -38,6 +40,9 @@ app.use(
     credentials: true,
   })
 );
+
+app.options("*", cors());
+
 
 // 🔥 IMPORTANT — FIXES OPTIONS PREFLIGHT ERRORS
 app.options("*", cors());
