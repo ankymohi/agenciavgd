@@ -11,31 +11,60 @@ import adminRoutes from "./routes/adminRoutes.js";
 
 dotenv.config();
 const app = express();
-app.use(cors());
+
+// ------------------------------
+// ✅ FIXED CORS (ONLY THIS ONE)
+// ------------------------------
+const allowedOrigins = [
+  "https://agenciavgd.vercel.app",
+  "https://agenciavgd-xy81.vercel.app",
+  "https://agenciavgd-anwr.vercel.app",
+  "http://localhost:3000"
+];
+
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        console.log("❌ Blocked by CORS:", origin);
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true,
+  })
+);
+
 app.use(express.json());
-// ✅ Allow requests from your frontend domain
-app.use(cors({
-  origin: ["https://agenciavgd.vercel.app", "https://agenciavgd-xy81.vercel.app"],
-  credentials: true, // if you’re using cookies or auth tokens
-}));
-// routes
+
+// ------------------------------
+// ROUTES
+// ------------------------------
 app.use("/api/auth", authRoutes);
 app.use("/api/images", bunnyRoutes);
 app.use("/api/admin", adminRoutes);
 
 app.get("/", (req, res) => res.send("API is running successfully 🚀"));
 
-// Mercado Pago v2 client
+// ------------------------------
+// MERCADO PAGO CONFIG
+// ------------------------------
 const MP_TOKEN = process.env.MP_ACCESS_TOKEN;
 if (!MP_TOKEN) {
   console.warn("⚠️ MP_ACCESS_TOKEN not set in .env — Mercado Pago calls will fail.");
 }
+
 const client = new MercadoPagoConfig({ accessToken: MP_TOKEN });
 
-// create preference endpoint
+// ------------------------------
+// CREATE PREFERENCE
+// ------------------------------
 app.post("/create-preference", async (req, res) => {
   try {
     const { plan } = req.body;
+
     if (!plan || !plan.name || !plan.price) {
       return res.status(400).json({ error: "Invalid plan data" });
     }
@@ -49,12 +78,11 @@ app.post("/create-preference", async (req, res) => {
           unit_price: parseFloat(plan.price),
         },
       ],
-      
-     back_urls: {
-    success: "https://himalayastechies.com/payment-success",
-    failure: "https://localhost:3000/payment-failure",
-    pending: "hhttps://himalayastechies.com/payment-pending"
-  },
+      back_urls: {
+        success: "https://himalayastechies.com/payment-success",
+        failure: "https://himalayastechies.com/payment-failure",
+        pending: "https://himalayastechies.com/payment-pending",
+      },
       auto_return: "approved",
     };
 
@@ -73,23 +101,25 @@ app.post("/create-preference", async (req, res) => {
     return res.status(500).json({ error: err?.message || "MercadoPago error" });
   }
 });
+
+// ------------------------------
+// WEBHOOK
+// ------------------------------
 app.post("/webhook/mercadopago", express.json(), async (req, res) => {
-  // log the payload
   console.log("MP webhook:", req.body);
-  // verify event type & then update DB when payment approved
-  // Example payload processing depends on Mercado Pago webhook body
   res.status(200).send("ok");
 });
 
-/*
-  Optional webhook endpoint (recommended, see step 5)
-  app.post('/webhook/mercadopago', express.json(), (req, res) => { ... })
-*/
-
+// ------------------------------
+// MONGO CONNECTION
+// ------------------------------
 mongoose
   .connect(process.env.MONGO_URI)
   .then(() => console.log("✅ MongoDB Connected"))
   .catch((err) => console.log("❌ MongoDB Connection Error:", err));
 
+// ------------------------------
+// START SERVER
+// ------------------------------
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
