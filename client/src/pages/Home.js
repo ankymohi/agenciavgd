@@ -6,10 +6,10 @@ import logo from "../assets/logo.png";
 
 // Import local gallery images
 
-import img1 from "../assets/IMG_8022.png";
-import img2 from "../assets/IMG_8086.png";
-import img3 from "../assets/IMG_8136.png";
-import img4 from "../assets/IMG_8146.png";
+import img1 from "../assets/photo1.jpg";
+import img2 from "../assets/photo2.jpg";
+import img3 from "../assets/photo3.jpg";
+import img4 from "../assets/photo4.jpg";
 
 
 
